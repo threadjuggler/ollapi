@@ -33,6 +33,59 @@ run in containers. (A no-Docker path is in [section 7](#7-running-without-docker
 
 ---
 
+## Choosing how to run Ollama (Docker vs. local)
+
+ollapi needs an Ollama server to talk to. There are two ways to provide one —
+pick whichever fits you:
+
+| | **A. Ollama in Docker** (default) | **B. Your local Ollama** |
+|---|---|---|
+| Who it's for | You don't have Ollama yet, or want everything self-contained | You already run Ollama on your host and have models downloaded |
+| Setup | None — it's the default | A small `docker-compose.yml` edit (below) |
+| Models | Downloaded into a Docker volume on first run | Reuses the models you already have (no re-download) |
+| GPU | Uses the container's GPU config (see the GPU section) | Uses your host's existing Ollama/GPU setup |
+
+> ⚠️ **You can't use both at once.** The Docker Ollama and a local Ollama both
+> want host port **11434**. If `docker compose up` fails with
+> `address already in use ... 11434`, you have a local Ollama running — either
+> stop it (Path A) or switch to Path B.
+
+**Path A — Ollama in Docker (default).** Make sure nothing else is using port
+11434 first (stop a local Ollama with `sudo systemctl stop ollama`, or quit the
+Ollama desktop app), then just follow [section 2](#2-run-it-the-easy-way). The
+model downloads automatically on first run. Nothing else to do.
+
+**Path B — use the Ollama already on your machine.** Keep your local Ollama
+running and point the app at it instead of starting a second Ollama in Docker.
+Edit `docker-compose.yml`:
+
+1. **Comment out (or delete) the entire `ollama:` service.**
+2. In the `app:` service, change the existing `OLLAMA_BASE_URL` line so it points
+   at your host:
+   ```yaml
+   app:
+     environment:
+       OLLAMA_BASE_URL: http://host.docker.internal:11434
+   ```
+3. **On Linux only**, add a host mapping to the `app:` service so the container
+   can reach your machine:
+   ```yaml
+   app:
+     extra_hosts:
+       - "host.docker.internal:host-gateway"
+   ```
+   (Docker Desktop on macOS/Windows resolves `host.docker.internal` already, so
+   you can skip this step there.)
+4. Remove the `ollama` entry from the app's `depends_on:` (keep the `db` one).
+5. Make sure your local Ollama is running and has the model:
+   ```bash
+   ollama serve            # if it isn't already running
+   ollama pull gemma4:e2b
+   ```
+6. Start the rest of the stack: `docker compose up --build`.
+
+---
+
 ## 2. Run it (the easy way)
 
 ```bash
@@ -51,6 +104,10 @@ Then open **<http://localhost:8000>** in your browser.
 
 That's it. Leave the terminal open (or add `-d` to run in the background:
 `docker compose up --build -d`).
+
+> This runs Ollama **in Docker** (Path A). If you'd rather use the Ollama already
+> installed on your machine, see
+> [Choosing how to run Ollama](#choosing-how-to-run-ollama-docker-vs-local) first.
 
 ---
 
@@ -236,6 +293,12 @@ docker compose up
 **Port 5431 is already in use** — another service grabbed it. Change the host
 side of the mapping in `docker-compose.yml` (`"5431:5432"` → e.g. `"5433:5432"`).
 The app itself is unaffected (it uses `db:5432` internally).
+
+**Port 11434 is already in use / `address already in use ... 11434`** — you have
+a local Ollama running while also trying to start the Docker one. Either stop the
+local Ollama (`sudo systemctl stop ollama`, or quit the desktop app) to use
+**Path A**, or switch to **Path B** and reuse your local Ollama — see
+[Choosing how to run Ollama](#choosing-how-to-run-ollama-docker-vs-local).
 
 **The status dot stays amber for a long time** — the model is still downloading.
 Check progress with `docker compose logs -f app`. Large models simply take a
