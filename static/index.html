@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ollapi — chat with your local LLM</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1>ollapi</h1>
+        <button id="new-chat" title="New conversation">+ New</button>
+      </div>
+      <ul id="conversation-list"></ul>
+      <div class="sidebar-footer">
+        <div id="status-bar" class="status">
+          <span id="status-dot" class="dot"></span>
+          <span id="status-text">checking…</span>
+        </div>
+        <button id="open-settings" class="settings-btn">⚙ Settings</button>
+      </div>
+    </aside>
+
+    <!-- Main chat area -->
+    <main id="chat">
+      <div id="messages"></div>
+      <form id="composer">
+        <textarea
+          id="input"
+          placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
+          rows="1"
+          autofocus
+        ></textarea>
+        <button id="send" type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button id="close-settings" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <label>
+          Model
+          <div class="row">
+            <select id="model-select"></select>
+            <input id="model-custom" type="text" placeholder="or type a tag, e.g. gemma3n:e2b" />
+          </div>
+        </label>
+
+        <fieldset class="pull-box">
+          <legend>Download / pull a model</legend>
+          <div class="row">
+            <input id="pull-model" type="text" placeholder="model tag to pull (e.g. llama3.2:1b)" />
+            <button id="pull-btn" type="button">Pull</button>
+          </div>
+          <pre id="pull-log" class="pull-log hidden"></pre>
+        </fieldset>
+
+        <label>
+          System prompt
+          <textarea id="system-prompt" rows="4"></textarea>
+        </label>
+
+        <div class="grid">
+          <label>
+            Temperature <span id="temp-val" class="hint"></span>
+            <input id="temperature" type="range" min="0" max="2" step="0.1" />
+          </label>
+          <label>
+            Top&nbsp;P <span id="topp-val" class="hint"></span>
+            <input id="top_p" type="range" min="0" max="1" step="0.05" />
+          </label>
+          <label>
+            Context size (num_ctx)
+            <input id="num_ctx" type="number" min="512" step="512" />
+          </label>
+          <label>
+            Max tokens (num_predict, -1 = unlimited)
+            <input id="num_predict" type="number" min="-1" step="1" />
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span id="settings-msg" class="hint"></span>
+        <button id="save-settings" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
