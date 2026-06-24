@@ -34,7 +34,7 @@ is low-risk and easily reversible, and say which assumption you made.
 - **Frontend:** Static HTML/CSS/JS single-page app served by FastAPI from `static/`.
 - **Database:** Postgres (async SQLAlchemy + asyncpg) stores conversations,
   messages, and the live model configuration.
-- **LLM:** Ollama, default model `gemma3n:e2b` (configurable via `OLLAMA_MODEL`
+- **LLM:** Ollama, default model `gemma4:e2b` (configurable via `OLLAMA_MODEL`
   or the in-app Settings panel).
 
 ## Layout

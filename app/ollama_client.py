@@ -24,7 +24,7 @@ class OllamaClient:
             models = await self.list_models()
         except Exception:  # noqa: BLE001
             return False
-        # Ollama reports tags like "gemma3n:e2b"; treat a bare name as ":latest".
+        # Ollama reports tags like "gemma4:e2b"; treat a bare name as ":latest".
         wanted = model if ":" in model else f"{model}:latest"
         return wanted in models or model in models
 

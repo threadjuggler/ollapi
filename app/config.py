@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     # Ollama
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "gemma3n:e2b"
+    ollama_model: str = "gemma4:e2b"
     auto_pull_model: bool = True
 
     # Default generation settings used to seed the editable app config row.
