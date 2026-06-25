@@ -93,10 +93,13 @@ Edit `docker-compose.yml`:
 git clone git@github.com:threadjuggler/ollapi.git
 cd ollapi
 
-# 2. (Optional) create your config from the template and edit if you like
+# 2. Create your config from the template
 cp .env.example .env
 
-# 3. Start everything (app + Postgres + Ollama)
+# 3. Set a Postgres password in .env
+# Edit .env and set: POSTGRES_PASSWORD=<a-strong-password>
+
+# 4. Start everything (app + Postgres + Ollama)
 docker compose up --build
 ```
 
@@ -188,8 +191,8 @@ your machine* (e.g. with `psql -h localhost -p 5431 -U ollapi`).
 
 ## 6. Configuration
 
-Everything has sensible defaults. To override, copy `.env.example` to `.env` and
-edit:
+Most things have sensible defaults. The database **password** is the exception:
+it has no default and must be set. Copy `.env.example` to `.env` and edit:
 
 | Variable            | Default        | Description |
 |---------------------|----------------|-------------|
@@ -197,7 +200,7 @@ edit:
 | `AUTO_PULL_MODEL`   | `true`         | Download the model automatically on first start |
 | `APP_PORT`          | `8000`         | Host port for the web UI |
 | `POSTGRES_USER`     | `ollapi`       | Database user |
-| `POSTGRES_PASSWORD` | `REDACTED`       | Database password |
+| `POSTGRES_PASSWORD` | _(required)_   | Database password — no default; you must set it in `.env` |
 | `POSTGRES_DB`       | `ollapi`       | Database name |
 
 Model behaviour (system prompt, temperature, top-p, context size, max tokens)
@@ -225,7 +228,7 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 # 2. Point the app at your services
-export DATABASE_URL="postgresql+asyncpg://ollapi:REDACTED@localhost:5431/ollapi"
+export DATABASE_URL="postgresql+asyncpg://ollapi:<your-password>@localhost:5431/ollapi"
 export OLLAMA_BASE_URL="http://localhost:11434"
 export OLLAMA_MODEL="gemma4:e2b"
 

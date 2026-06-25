@@ -6,12 +6,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    # Database — defaults target the local docker-compose setup. Note that the
-    # host-published port is 5431, but inside the compose network the app talks
-    # to the "db" service on the standard 5432.
-    database_url: str = (
-        "postgresql+asyncpg://ollapi:REDACTED@localhost:5431/ollapi"
-    )
+    # Database connection URL. Required — there is intentionally no default, so
+    # that no credentials are ever hardcoded in the repo. Set DATABASE_URL in the
+    # environment (or a local .env). In Docker, docker-compose builds it from the
+    # POSTGRES_* variables; for local dev set it yourself, e.g.
+    #   postgresql+asyncpg://<user>:<password>@localhost:5431/<db>
+    # (the host-published Postgres port is 5431, mapped to container 5432).
+    database_url: str
 
     # Ollama
     ollama_base_url: str = "http://localhost:11434"
